@@ -54,10 +54,15 @@
   .bgp-logo-link .bare-logo{pointer-events:auto;cursor:pointer;-webkit-touch-callout:none;}
   .bgp-logo-link{-webkit-tap-highlight-color:transparent;}
 </style>
+<link rel="preload" as="image" href="v1/1/f0_0.jpg" fetchpriority="high">
+<link rel="preload" as="image" href="v1/1/l0_0.jpg" fetchpriority="low">
+<link rel="preload" as="image" href="v1/1/r0_0.jpg" fetchpriority="low">
+<link rel="preload" as="image" href="v1/1/u0_0.jpg" fetchpriority="low">
+<link rel="preload" as="image" href="v1/1/d0_0.jpg" fetchpriority="low">
 </head>
 <body>
 <div id="pano"></div>
-<a id="bgp-logo-link" class="bgp-logo-link" href="https://biograpi.ge/ka/hisni" aria-label="HISNI by Biograpi"><img class="bare-logo" src="logo.png" alt="HISNI by Biograpi"></a>
+<a id="bgp-logo-link" class="bgp-logo-link" href="https://biograpi.ge/ka/hisni" aria-label="HISNI by Biograpi"><img class="bare-logo" src="logo.png" alt="HISNI by Biograpi" fetchpriority="low" decoding="async"></a>
 <script>
 /* BGP logo link v1: logo opens the project grid on biograpi.ge in the visitor's language.
    Language comes from ?lang=ka|en|ru (added to the 360 links on biograpi.ge by GTM),
@@ -78,9 +83,17 @@
 <script src="pannellum.js"></script>
 <script>
   var VIEWS = [1,2,3];
-  function scene(img){ return { type:'equirectangular', panorama:img, hfov:100 }; }
+  // Tiles made from viewN.jpg. cubeResolution 3072 is the 512-tile grid at or
+  // above Pannellum's retain-all-details size for an 8192px equirect (2600).
+  // tileResolution 512 and maxLevel 4 match hisni1/hisni2, which are unchanged.
+  function scene(base){return{
+    type:'multires',
+    multiRes:{basePath:base,path:'/%l/%s%y_%x',fallbackPath:'/fallback/%s',
+      extension:'jpg',tileResolution:512,maxLevel:4,cubeResolution:3072},
+    hfov:100
+  };}
   var scenes = {};
-  VIEWS.forEach(function(n){ scenes['view'+n] = scene('view'+n+'.jpg'); });
+  VIEWS.forEach(function(n){ scenes['view'+n] = scene('v'+n); });
   var viewer = pannellum.viewer('pano', {
     default:{
       firstScene:'view1', autoLoad:true, autoRotate:-2, autoRotateInactivityDelay:3500,

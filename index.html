@@ -3,6 +3,32 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<script>
+/* Drop Google Ads / GTM Conversion Linker query params so the address bar stays short
+   and shareable. Keeps lang and every other non-tracking param. Hash is unchanged.
+   replaceState only — no reload, so the tour and the logo-language script still run. */
+(function () {
+  try {
+    var search = location.search;
+    if (!search || search.length < 2) return;
+    var tracking = { _gl: 1, gclid: 1, dclid: 1, gbraid: 1, wbraid: 1, gclsrc: 1 };
+    var parts = search.slice(1).split("&");
+    var kept = [];
+    var removed = false;
+    for (var i = 0; i < parts.length; i++) {
+      if (!parts[i]) continue;
+      var eq = parts[i].indexOf("=");
+      var rawKey = eq === -1 ? parts[i] : parts[i].slice(0, eq);
+      var key = rawKey;
+      try { key = decodeURIComponent(rawKey.replace(/\+/g, " ")); } catch (e) {}
+      if (tracking[key] || key.indexOf("_gcl_") === 0) removed = true;
+      else kept.push(parts[i]);
+    }
+    if (!removed) return;
+    history.replaceState(history.state, "", location.pathname + (kept.length ? "?" + kept.join("&") : "") + location.hash);
+  } catch (e) {}
+})();
+</script>
 <title>Hisni 360° | Biograpi Living</title>
 <link rel="stylesheet" href="pannellum.css">
 <style>
